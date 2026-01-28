@@ -7,7 +7,7 @@
         <h1 class="text-2xl font-bold text-gray-800 mb-2">
             <i class="fas fa-user-plus mr-2"></i> Formulario de Cliente
         </h1>
-        <p class="text-gray-600 mb-6">Complete todos los campos para registrar un nuevo cliente</p>
+        <p class="text-gray-600 mb-6">Complete todos los campos para agregar un nuevo cliente</p>
 
         <!-- Formulario Flowbite -->
         <form class="space-y-6">
