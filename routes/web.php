@@ -1,6 +1,8 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
 use App\Models\Equipo;
+use App\Models\Cliente;
 
 // Ruta principal
 Route::get('/', function () {
@@ -9,7 +11,8 @@ Route::get('/', function () {
 
 // CLIENTES
 Route::get('/clientes', function () {
-    return view('clientes.listado');
+    $clientes = Cliente::all();
+    return view('clientes.listado', compact('clientes'));
 });
 
 Route::get('/clientes/crear', function () {
@@ -22,45 +25,6 @@ Route::get('/equipos', function () {
     return view('equipos.listado', compact('equipos'));
 });
 
-
 Route::get('/equipos/crear', function () {
     return view('equipos.formulario');
 });
-
-// TICKETS
-Route::get('/tickets', function () {
-    return view('tickets.listado');
-});
-
-Route::get('/tickets/crear', function () {
-    return view('tickets.formulario');
-});
-
-// REPARADORES
-Route::get('/reparadores', function () {
-    return view('reparadores.listado');
-});
-
-Route::get('/reparadores/crear', function () {
-    return view('reparadores.formulario');
-});
-
-// MATERIALES
-Route::get('/materiales', function () {
-    return view('materiales.listado');
-});
-
-Route::get('/materiales/crear', function () {
-    return view('materiales.formulario');
-});
-
-// EVIDENCIAS
-Route::get('/evidencias', function () {
-    return view('evidencias.listado');
-});
-
-Route::get('/evidencias/crear', function () {
-    return view('evidencias.formulario');
-});
-
-
