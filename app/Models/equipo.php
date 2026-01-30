@@ -11,7 +11,7 @@ class equipo extends Model
     {
    
  
-    $devices = Equipo::all();
+       $devices = Equipo::all();
         
         return $devices;
     }

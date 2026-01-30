@@ -31,55 +31,46 @@
                 </tr>
             </thead>
             <tbody>
-                <!-- Ejemplo de datos -->
-                <tr class="bg-white border-b hover:bg-gray-50">
-                    <td class="px-6 py-4 font-medium text-gray-900">001</td>
-                    <td class="px-6 py-4">Juan Carlos</td>
-                    <td class="px-6 py-4">Pérez López</td>
-                    <td class="px-6 py-4">555-123-4567</td>
-                    <td class="px-6 py-4">juan@email.com</td>
-                    <td class="px-6 py-4">
-                        <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">Activo</span>
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="flex space-x-2">
-                            <button class="text-blue-600 hover:text-blue-900">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="text-green-600 hover:text-green-900">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="text-red-600 hover:text-red-900">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-                <!-- Segundo ejemplo -->
-                <tr class="bg-white border-b hover:bg-gray-50">
-                    <td class="px-6 py-4 font-medium text-gray-900">002</td>
-                    <td class="px-6 py-4">María Elena</td>
-                    <td class="px-6 py-4">González Rodríguez</td>
-                    <td class="px-6 py-4">555-987-6543</td>
-                    <td class="px-6 py-4">maria@email.com</td>
-                    <td class="px-6 py-4">
-                        <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">Pendiente</span>
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="flex space-x-2">
-                            <button class="text-blue-600 hover:text-blue-900">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="text-green-600 hover:text-green-900">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="text-red-600 hover:text-red-900">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
+                @foreach($clientes as $cliente)
+                    <tr class="bg-white border-b hover:bg-gray-50"> 
+                        <td class="px-6 py-4 font-medium text-gray-900">
+                            {{$cliente -> id}}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{$cliente -> nombres}}
+                        </td class="px-6 py-4">
+                        <td>
+                            {{$cliente -> apellido_paterno. ' ' . $cliente -> apellido_materno }}
+                        </td>
+                        <td class= "px-6 py-4">
+                            {{$cliente -> cellular}}
+                        </td>
+                        <td class= "px-6 py-4">
+                            {{$cliente -> correo}}
+                        </td>
+                        <td class = "px-6 py-4">
+                            {{$cliente -> estado}}
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex space-x-2">
+                                <a href="#" class="text-blue-600 hover:text-blue-900">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="#" class="text-green-600 hover:text-green-900">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form action="#" method="POST">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="text-red-600 hover:text-red-900">
+                                    <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                @endforeach
+             </tbody>
         </table>
     </div>
 
