@@ -3,14 +3,14 @@
 @section('content')
 <div class="max-w-4xl mx-auto">
     <div class="bg-white rounded-lg shadow-md p-6">
-        <!-- Título -->
         <h1 class="text-2xl font-bold text-gray-800 mb-2">
             <i class="fas fa-camera mr-2"></i> Nueva Evidencia
         </h1>
-        <p class="text-gray-600 mb-6">Registre evidencia fotográfica de reparación o diagnóstico</p>
+        <p class="text-gray-600 mb-6">Registro fotográfico de reparaciones</p>
 
-        <!-- Formulario -->
-        <form class="space-y-6">
+        <form method="POST" action="{{ url('/evidencias') }}" enctype="multipart/form-data" class="space-y-6">
+            @csrf
+
             <!-- Sección 1: Información del Ticket -->
             <div class="border-b pb-6">
                 <h2 class="text-lg font-semibold text-gray-700 mb-4">
@@ -18,12 +18,18 @@
                 </h2>
                 
                 <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-900">Ticket Relacionado *</label>
-                    <select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                    <label for="ticket_id" class="block mb-2 text-sm font-medium text-gray-900">
+                        Ticket Relacionado *
+                    </label>
+                    <select id="ticket_id" name="ticket_id" 
+                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                            required>
                         <option value="">Seleccione un ticket</option>
-                        <option value="T001">T001 - Pantalla no enciende (Cliente: Juan Pérez)</option>
-                        <option value="T002">T002 - Teclado dañado (Cliente: María García)</option>
-                        <option value="T003">T003 - No carga la batería (Cliente: Roberto Sánchez)</option>
+                        @foreach($tickets as $ticket)
+                            <option value="{{ $ticket->id }}" {{ old('ticket_id') == $ticket->id ? 'selected' : '' }}>
+                                Ticket #{{ $ticket->id }} - {{ $ticket->problema }}
+                            </option>
+                        @endforeach
                     </select>
                     <p class="mt-1 text-sm text-gray-500">Seleccione el ticket al que pertenece esta evidencia</p>
                 </div>
@@ -36,8 +42,13 @@
                 </h2>
                 
                 <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-900">Descripción *</label>
-                    <textarea rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" placeholder="Describa lo que muestra la evidencia, fallas encontradas, observaciones importantes..."></textarea>
+                    <label for="descripcion" class="block mb-2 text-sm font-medium text-gray-900">
+                        Descripción *
+                    </label>
+                    <textarea id="descripcion" name="descripcion" rows="4" 
+                              class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" 
+                              placeholder="Describa lo que muestra la evidencia, fallas encontradas, observaciones importantes..."
+                              required>{{ old('descripcion') }}</textarea>
                     <p class="mt-1 text-sm text-gray-500">Sea específico sobre lo que se observa en la imagen</p>
                 </div>
             </div>
@@ -49,31 +60,16 @@
                 </h2>
                 
                 <div>
-                    <label class="block mb-2 text-sm font-medium text-gray-900">Subir Imagen *</label>
-                    <div class="flex items-center justify-center w-full">
-                        <label for="dropzone-file" class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                                <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-3"></i>
-                                <p class="mb-2 text-sm text-gray-500">
-                                    <span class="font-semibold">Haga clic para subir</span> o arrastre y suelte
-                                </p>
-                                <p class="text-xs text-gray-500">PNG, JPG o JPEG (MAX. 5MB)</p>
-                            </div>
-                            <input id="dropzone-file" type="file" class="hidden" accept="image/*" />
-                        </label>
-                    </div>
-                    
-                    <!-- Vista previa -->
-                    <div class="mt-4 hidden" id="image-preview">
-                        <label class="block mb-2 text-sm font-medium text-gray-900">Vista Previa</label>
-                        <div class="border border-gray-300 rounded-lg p-4">
-                            <div class="flex items-center justify-center">
-                                <img id="preview-image" class="max-h-48 rounded" src="" alt="Vista previa">
-                            </div>
-                            <button type="button" id="remove-image" class="mt-2 text-red-600 hover:text-red-900 text-sm">
-                                <i class="fas fa-trash mr-1"></i> Eliminar imagen
-                            </button>
-                        </div>
+                    <label for="imagen" class="block mb-2 text-sm font-medium text-gray-900">
+                        Subir Imagen *
+                    </label>
+                    <input type="file" id="imagen" name="imagen" 
+                           class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none"
+                           accept="image/png,image/jpeg,image/jpg"
+                           required>
+                    <div class="mt-2 p-4 bg-gray-50 rounded-lg border border-dashed border-gray-300 text-center">
+                        <p class="text-gray-500">Haga clic para subir o arrastre y suelte</p>
+                        <p class="text-sm text-gray-400">PNG, JPG o JPEG (MAX. 5MB)</p>
                     </div>
                 </div>
             </div>
@@ -81,24 +77,33 @@
             <!-- Sección 4: Información Adicional -->
             <div>
                 <h2 class="text-lg font-semibold text-gray-700 mb-4">
-                    <i class="fas fa-calendar-alt mr-2"></i> Información Adicional
+                    <i class="fas fa-info-circle mr-2"></i> Información Adicional
                 </h2>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Fecha -->
                     <div>
-                        <label class="block mb-2 text-sm font-medium text-gray-900">Fecha de la Evidencia</label>
-                        <input type="date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                        <label for="fecha" class="block mb-2 text-sm font-medium text-gray-900">
+                            Fecha de la Evidencia
+                        </label>
+                        <input type="date" id="fecha" name="fecha" 
+                               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                               value="{{ old('fecha') }}">
                     </div>
                     
-                    <!-- Técnico Responsable -->
+                    <!-- Técnico -->
                     <div>
-                        <label class="block mb-2 text-sm font-medium text-gray-900">Técnico Responsable</label>
-                        <select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                        <label for="tecnico_id" class="block mb-2 text-sm font-medium text-gray-900">
+                            Técnico Responsable
+                        </label>
+                        <select id="tecnico_id" name="tecnico_id" 
+                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
                             <option value="">Seleccione técnico</option>
-                            <option value="R001">Carlos Mendoza (Electrónica)</option>
-                            <option value="R002">Ana Torres (Software)</option>
-                            <option value="R003">José Luis Hernández (General)</option>
+                            @foreach($tecnicos as $tecnico)
+                                <option value="{{ $tecnico->id }}" {{ old('tecnico_id') == $tecnico->id ? 'selected' : '' }}>
+                                    {{ $tecnico->nombres }} {{ $tecnico->apellido_paterno }}
+                                </option>
+                            @endforeach
                         </select>
                     </div>
                 </div>
@@ -118,32 +123,4 @@
         </form>
     </div>
 </div>
-
-<script>
-// Script para vista previa de imagen
-document.addEventListener('DOMContentLoaded', function() {
-    const fileInput = document.getElementById('dropzone-file');
-    const imagePreview = document.getElementById('image-preview');
-    const previewImage = document.getElementById('preview-image');
-    const removeButton = document.getElementById('remove-image');
-    
-    fileInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                previewImage.src = e.target.result;
-                imagePreview.classList.remove('hidden');
-            }
-            reader.readAsDataURL(file);
-        }
-    });
-    
-    removeButton.addEventListener('click', function() {
-        fileInput.value = '';
-        previewImage.src = '';
-        imagePreview.classList.add('hidden');
-    });
-});
-</script>
 @endsection

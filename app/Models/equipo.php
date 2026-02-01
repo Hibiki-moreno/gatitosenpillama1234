@@ -2,17 +2,26 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class equipo extends Model
+class Equipo extends Model
 {
+    use HasFactory;
+
+    public $timestamps = false;
     protected $table = 'equipos';
-  public function index()
-    {
-   
  
-       $devices = Equipo::all();
-        
-        return $devices;
+
+    protected $fillable = [
+        'modelo',
+        'marca',
+        'ano',
+        'condicion_fisica',
+        'color'
+    ];
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
     }
 }
