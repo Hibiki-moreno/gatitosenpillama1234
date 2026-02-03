@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Models\Equipo;
 use App\Models\Cliente;
+use app\Models\ticket;
 
 // Ruta principal
 Route::get('/', function () {
@@ -27,4 +28,9 @@ Route::get('/equipos', function () {
 
 Route::get('/equipos/crear', function () {
     return view('equipos.formulario');
+});
+
+route::get('/tickets',function (){
+    $tickets = tickets::all();
+    return view('tickets.listado',compact('tickets'));
 });
