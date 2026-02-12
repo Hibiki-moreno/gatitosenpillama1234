@@ -90,22 +90,6 @@
                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
                                value="{{ old('fecha') }}">
                     </div>
-                    
-                    <!-- Técnico -->
-                    <div>
-                        <label for="tecnico_id" class="block mb-2 text-sm font-medium text-gray-900">
-                            Técnico Responsable
-                        </label>
-                        <select id="tecnico_id" name="tecnico_id" 
-                                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
-                            <option value="">Seleccione técnico</option>
-                            @foreach($tecnicos as $tecnico)
-                                <option value="{{ $tecnico->id }}" {{ old('tecnico_id') == $tecnico->id ? 'selected' : '' }}>
-                                    {{ $tecnico->nombres }} {{ $tecnico->apellido_paterno }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
                 </div>
             </div>
 

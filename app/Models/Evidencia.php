@@ -2,34 +2,22 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Evidencia extends Model
 {
-    use HasFactory;
-    
-    protected $table = 'evidencias';
-    
+    // Esto permite que el controlador guarde los datos en estas columnas
     protected $fillable = [
         'ticket_id',
+        'ruta',
         'descripcion',
-        'imagen',
         'fecha',
-        'tecnico_id'
+        'reparador_id'
     ];
-    
-    protected $casts = [
-        'fecha' => 'date'
-    ];
-    
+
+    // Relación inversa (opcional, pero útil)
     public function ticket()
     {
-        return $this->belongsTo(Ticket::class, 'ticket_id');
-    }
-    
-    public function tecnico()
-    {
-        return $this->belongsTo(Reparador::class, 'tecnico_id');
+        return $this->belongsTo(Ticket::class);
     }
 }

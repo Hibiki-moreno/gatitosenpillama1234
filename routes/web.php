@@ -1,59 +1,121 @@
 <?php
 
-use App\Http\Controllers\AdministradoresController;
+use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\EquipoController;
 use App\Http\Controllers\EvidenciaController;
 use App\Http\Controllers\MaterialesController;
 use App\Http\Controllers\ReparadorController;
 use App\Http\Controllers\TicketController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LocationController;
 
-// Ruta principal
-Route::get('/', function () {
-    return view('layouts.app');
+/*
+|--------------------------------------------------------------------------
+| HOME
+|--------------------------------------------------------------------------
+*/
+Route::get('/', fn () => view('layouts.app'))->name('home');
+
+
+/*
+|--------------------------------------------------------------------------
+| MAPA / GEOLOCALIZACIÓN
+|--------------------------------------------------------------------------
+*/
+Route::view('/mapa', 'mapa.mapa')->name('mapa');
+Route::post('/location', [LocationController::class, 'store'])->name('location.store');
+
+
+/*
+|--------------------------------------------------------------------------
+| CLIENTES
+|--------------------------------------------------------------------------
+*/
+Route::prefix('clientes')->name('clientes.')->group(function () {
+    Route::get('/', [ClienteController::class, 'index'])->name('index');
+    Route::get('/crear', [ClienteController::class, 'create'])->name('create');
+    Route::post('/', [ClienteController::class, 'store'])->name('store');
+    Route::get('/{cliente}/editar', [ClienteController::class, 'edit'])->name('edit');
+    Route::put('/{cliente}', [ClienteController::class, 'update'])->name('update');
+    Route::delete('/{cliente}', [ClienteController::class, 'destroy'])->name('destroy');
 });
 
-// CLIENTES
-Route::get('/clientes', [ClienteController::class, 'index']);
-Route::get('/clientes/crear', [ClienteController::class, 'create']);
-Route::post('/clientes', [ClienteController::class, 'store']);
-Route::delete('/clientes/{cliente}', [ClienteController::class, 'destroy']);
-Route::get('/clientes/{cliente}/editar', [ClienteController::class, 'edit']);
-Route::put('/clientes/{cliente}', [ClienteController::class, 'update']);
 
-// EQUIPOS
-Route::get('/equipos', [EquipoController::class, 'index']);
-Route::get('/equipos/crear', [EquipoController::class, 'create']);
-Route::post('/equipos', [EquipoController::class, 'store']);
-Route::get('/equipos/{equipo}/editar', [EquipoController::class, 'edit']);
-Route::put('/equipos/{equipo}', [EquipoController::class, 'update']);
-Route::delete('/equipos/{equipo}', [EquipoController::class, 'destroy']);
+/*
+|--------------------------------------------------------------------------
+| EQUIPOS
+|--------------------------------------------------------------------------
+*/
+Route::prefix('equipos')->name('equipos.')->group(function () {
+    Route::get('/', [EquipoController::class, 'index'])->name('index');
+    Route::get('/crear', [EquipoController::class, 'create'])->name('create');
+    Route::post('/', [EquipoController::class, 'store'])->name('store');
+    Route::get('/{equipo}/editar', [EquipoController::class, 'edit'])->name('edit');
+    Route::put('/{equipo}', [EquipoController::class, 'update'])->name('update');
+    Route::delete('/{equipo}', [EquipoController::class, 'destroy'])->name('destroy');
+});
 
-// TICKETS NO ESTA LISTA
-Route::get('/tickets', [TicketController::class, 'index']);
-Route::get('/tickets/crear', [TicketController::class, 'create']);
-Route::post('/tickets', [TicketController::class, 'store']);
-Route::delete('/tickets/{id}', [TicketController::class, 'destroy']);
 
-// REPARADORES
-Route::get('/reparadores', [ReparadorController::class, 'index']);
-Route::get('/reparadores/crear', [ReparadorController::class, 'create']);
-Route::post('/reparadores', [ReparadorController::class, 'store']);
-Route::get('/reparadores/{id}/editar', [ReparadorController::class, 'edit']);
-Route::put('/reparadores/{id}', [ReparadorController::class, 'update']);
-Route::delete('/reparadores/{id}', [ReparadorController::class, 'destroy']);
+/*
+|--------------------------------------------------------------------------
+| TICKETS
+|--------------------------------------------------------------------------
+*/
+Route::prefix('tickets')->name('tickets.')->group(function () {
+    Route::get('/', [TicketController::class, 'index'])->name('index');
+    Route::get('/crear', [TicketController::class, 'create'])->name('create');
+    Route::post('/', [TicketController::class, 'store'])->name('store');
+    Route::get('/{ticket}', [TicketController::class, 'show'])->name('show');
+    Route::get('/{ticket}/editar', [TicketController::class, 'edit'])->name('edit');
+    Route::put('/{ticket}', [TicketController::class, 'update'])->name('update');
+    Route::delete('/{ticket}', [TicketController::class, 'destroy'])->name('destroy');
 
-// MATERIALES
-Route::get('/materiales', [MaterialesController::class, 'index']);
-Route::get('/materiales/crear', [MaterialesController::class, 'create']);
-Route::post('/materiales', [MaterialesController::class, 'store']);
-Route::get('/materiales/{id}/editar', [MaterialesController::class, 'edit']);
-Route::put('/materiales/{id}', [MaterialesController::class, 'update']);
-Route::delete('/materiales/{id}', [MaterialesController::class, 'destroy']);
+    // RUTA PARA EVIDENCIAS DE UN TICKET
+    Route::post('/tickets/{ticket}/evidencias', [TicketController::class, 'guardarEvidencia'])
+    ->name('tickets.evidencias.store');
+    Route::get('/{ticket}/evidencias', [TicketController::class, 'crearEvidencia'])->name('evidencia');
+});
 
-// EVIDENCIAS TICKETS QUE AUN NO QUEDAAA
-Route::get('/tickets/create', [EvidenciaController::class, 'create'])->name('tickets.create');
-Route::post('/tickets', [EvidenciaController::class, 'store'])->name('tickets.store');
-Route::get('/tickets', [EvidenciaController::class, 'index'])->name('tickets.index');
 
+/*
+|--------------------------------------------------------------------------
+| EVIDENCIAS (GENÉRICAS)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('evidencias')->name('evidencias.')->group(function () {
+    Route::get('/', [EvidenciaController::class, 'index'])->name('index');
+    Route::get('/crear', [EvidenciaController::class, 'create'])->name('create');
+    Route::post('/', [EvidenciaController::class, 'store'])->name('store');
+    Route::delete('/{evidencia}', [EvidenciaController::class, 'destroy'])->name('destroy');
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| REPARADORES
+|--------------------------------------------------------------------------
+*/
+Route::prefix('reparadores')->name('reparadores.')->group(function () {
+    Route::get('/', [ReparadorController::class, 'index'])->name('index');
+    Route::get('/crear', [ReparadorController::class, 'create'])->name('create');
+    Route::post('/', [ReparadorController::class, 'store'])->name('store');
+    Route::get('/{reparador}/editar', [ReparadorController::class, 'edit'])->name('edit');
+    Route::put('/{reparador}', [ReparadorController::class, 'update'])->name('update');
+    Route::delete('/{reparador}', [ReparadorController::class, 'destroy'])->name('destroy');
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| MATERIALES
+|--------------------------------------------------------------------------
+*/
+Route::prefix('materiales')->name('materiales.')->group(function () {
+    Route::get('/', [MaterialesController::class, 'index'])->name('index');
+    Route::get('/crear', [MaterialesController::class, 'create'])->name('create');
+    Route::post('/', [MaterialesController::class, 'store'])->name('store');
+    Route::get('/{material}/editar', [MaterialesController::class, 'edit'])->name('edit');
+    Route::put('/{material}', [MaterialesController::class, 'update'])->name('update');
+    Route::delete('/{material}', [MaterialesController::class, 'destroy'])->name('destroy');
+});

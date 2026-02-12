@@ -33,7 +33,7 @@
     <td>{{ $cliente->id }}</td>
     <td>{{ $cliente->nombres }}</td>
     <td>{{ $cliente->apellido_paterno }} {{ $cliente->apellido_materno }}</td>
-    <td>{{ $cliente->celular }}</td>
+    <td>{{ $cliente->cellular}}</td>
     <td>{{ $cliente->correo }}</td>
     <td>{{ $cliente->estado }}</td>
     <td>

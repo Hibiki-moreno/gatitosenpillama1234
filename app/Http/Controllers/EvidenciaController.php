@@ -2,120 +2,70 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Evidencia;
 use App\Models\Ticket;
-use App\Models\Cliente;
-use App\Models\Equipo;
+use App\Models\Reparador; 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class EvidenciaController extends Controller
 {
-    public function index()
+    // app/Http/Controllers/EvidenciaController.php
+
+public function index()
+{
+    // En lugar de Evidence::all(), traemos los tickets con sus fotos
+    $tickets = \App\Models\Ticket::with('evidencias')->get();
+
+    // Enviamos 'tickets' a la vista para que el @foreach($tickets...) funcione
+    return view('evidencias.listado', compact('tickets'));
+}
+    public function create($ticketId = null)
     {
-        $tickets = Ticket::with(['cliente', 'equipo'])
-            ->orderBy('id', 'desc')
-            ->get();
-            
-        return view('tickets.listado', ['tickets' => $tickets]);
+        $tickets = Ticket::all();
+        $tecnicos = Reparador::all(); 
+        $ticket = $ticketId ? Ticket::find($ticketId) : null;
+
+        return view('evidencias.formulario', compact('tickets', 'tecnicos', 'ticket', 'ticketId'));
     }
-    
-    public function create()
-    {
-        $clientes = Cliente::all();
-        $equipos = Equipo::all();
-        return view('tickets.formulario', [
-            'clientes' => $clientes,
-            'equipos' => $equipos
-        ]);
-    }
-    
+
     public function store(Request $request)
     {
+        // 1. VALIDACIÓN: Si esto falla, ni siquiera intenta insertar en la DB
         $request->validate([
-            'cliente_id' => 'required',
-            'equipo_id' => 'required',
-            'problema' => 'required',
-            'prioridad' => 'required',
-            'estado' => 'required',
-            'tipo_reparacion' => 'required',
-            'metodo_pago' => 'required',
-            'total' => 'required|numeric'
+            'ticket_id'    => 'required|exists:tickets,id',
+            'imagen'       => 'required|image|max:5120', // El nombre del input en tu HTML es 'imagen'
+            'descripcion'  => 'nullable|string|max:400',
+            'fecha'        => 'nullable|date',
+            'tecnico_id'   => 'nullable|exists:reparadores,id' 
         ]);
-        
-        $ticket = new Ticket();
-        $ticket->cliente_id = $request->cliente_id;
-        $ticket->equipo_id = $request->equipo_id;
-        $ticket->problema = $request->problema;
-        $ticket->diagnostico = $request->diagnostico ?? '';
-        $ticket->tipo_reparacion = $request->tipo_reparacion;
-        $ticket->prioridad = $request->prioridad;
-        $ticket->estado = $request->estado;
-        $ticket->metodo_pago = $request->metodo_pago;
-        $ticket->total = $request->total;
-        $ticket->fecha_ingreso = now();
-        $ticket->save();
-        
-        return redirect('/tickets')->with('exito', 'Ticket creado correctamente');
-    }
-    
-    public function show($id)
-    {
-        $ticket = Ticket::with(['cliente', 'equipo'])->findOrFail($id);
-        return view('tickets.ver', compact('ticket'));
-    }
-    
-    public function edit($id)
-    {
-        $ticket = Ticket::findOrFail($id);
-        $clientes = Cliente::all();
-        $equipos = Equipo::all();
-        
-        return view('tickets.editar', [
-            'ticket' => $ticket,
-            'clientes' => $clientes,
-            'equipos' => $equipos
+
+        // 2. GUARDAR ARCHIVO
+        $path = $request->file('imagen')->store('evidencias', 'public');
+
+        // 3. INSERTAR EN DB
+        // Asegúrate de que los nombres de la izquierda coincidan con tu SQL
+        Evidencia::create([
+            'ticket_id'    => $request->ticket_id,
+            'ruta'         => $path,           // <--- Esto es lo que MySQL pedía
+            'descripcion'  => $request->descripcion,
+            'fecha'        => $request->fecha ?? now(),
+            'reparador_id' => $request->tecnico_id
         ]);
+
+        return back()->with('exito', 'Evidencia guardada al mero madrazo');
     }
-    
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'cliente_id' => 'required',
-            'equipo_id' => 'required',
-            'problema' => 'required',
-            'prioridad' => 'required',
-            'estado' => 'required',
-            'tipo_reparacion' => 'required',
-            'metodo_pago' => 'required',
-            'total' => 'required|numeric'
-        ]);
-        
-        $ticket = Ticket::findOrFail($id);
-        $ticket->cliente_id = $request->cliente_id;
-        $ticket->equipo_id = $request->equipo_id;
-        $ticket->problema = $request->problema;
-        $ticket->diagnostico = $request->diagnostico ?? '';
-        $ticket->tipo_reparacion = $request->tipo_reparacion;
-        $ticket->prioridad = $request->prioridad;
-        $ticket->estado = $request->estado;
-        $ticket->metodo_pago = $request->metodo_pago;
-        $ticket->total = $request->total;
-        
-        // Si el estado es "entregado", agregar fecha de salida Nuevoo
-        if ($request->estado == 'entregado' && !$ticket->fecha_salida) {
-            $ticket->fecha_salida = now();
-        }
-        
-        $ticket->save();
-        
-        return redirect('/tickets')->with('exito', 'Ticket actualizado correctamente');
-    }
-    
-    // ELIMINAR
+
     public function destroy($id)
     {
-        $ticket = Ticket::findOrFail($id);
-        $ticket->delete();
-        
-        return redirect('/tickets')->with('exito', 'Ticket eliminado correctamente');
+        $evidencia = Evidencia::findOrFail($id);
+
+        if ($evidencia->ruta) {
+            Storage::disk('public')->delete($evidencia->ruta);
+        }
+
+        $evidencia->delete();
+
+        return back()->with('exito', 'Evidencia eliminada correctamente');
     }
 }

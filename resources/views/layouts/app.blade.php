@@ -11,6 +11,25 @@
         .sidebar-item:hover {
             background-color: #4B5563;
         }
+
+        /* Scrollbar moderna */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #4B5563;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #6B7280;
+}
+
     </style>
 </head>
 <body class="bg-gray-50">
@@ -31,7 +50,8 @@
     </header>
 
     <!-- NAVBAR -->
-    <nav class="fixed left-0 top-14 w-64 h-full bg-gray-800 text-white shadow-lg z-40">
+    <nav class="fixed left-0 top-14 w-64 h-[calc(100vh-56px)] overflow-y-auto scroll-smooth bg-gray-800 text-white shadow-lg z-40">
+
         <div class="p-4">
             <h2 class="text-lg font-semibold mb-6 border-b border-gray-700 pb-3">
                 <i class="fas fa-cogs mr-2"></i> Módulos del Sistema

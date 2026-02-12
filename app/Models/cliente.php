@@ -24,4 +24,8 @@ class Cliente extends Model
     {
         return $this->hasMany(Ticket::class);
     }
+
+    public function getNombre_completoAttribute(){
+        return "{$this -> nombres} {$this -> apellido_paterno} {$this -> apellido_materno}";
+    }
 }
