@@ -7,17 +7,30 @@ use Illuminate\Database\Eloquent\Model;
 
 class Materiales extends Model
 {
+    use HasFactory;
+
     protected $table = 'materiales';
     
     protected $fillable = [
         'nombre',
-        'categoria',
         'descripcion',
         'precio_unitario',
-        'cantidad_inicial',
         'existencia',
-        'stock_minimo',
         'estado',
+        'categoría',
+        'cantidad_inicial',
+        'stock_minimo',
         'ubicacion_almacen',
+        'imagen'
     ];
+
+    public function getImagenUrlAttribute()
+    {
+        return $this->imagen ? asset('storage/' . $this->imagen) : asset('img/default-material.png');
+    }
+
+    public function scopeStockBajo($query)
+    {
+        return $query->whereRaw('existencia <= stock_minimo');
+    }
 }

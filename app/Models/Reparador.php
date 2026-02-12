@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Reparador extends Model
 {
     use HasFactory;
-    
+
     protected $table = 'reparadores';
     
     protected $fillable = [
@@ -17,14 +17,25 @@ class Reparador extends Model
         'apellido_materno',
         'correo',
         'celular',
-        'especialidad_id',  
+        'especialidad_id',
         'anios_experiencia',
         'turno',
-        'estado'
+        'estado',
+        'imagen'
     ];
-    
+
     public function especialidad()
     {
-        return $this->belongsTo(Especialidad::class, 'especialidad_id');
+        return $this->belongsTo(Especialidad::class);
+    }
+
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
+    }
+
+    public function getImagenUrlAttribute()
+    {
+        return $this->imagen ? asset('storage/' . $this->imagen) : asset('img/default-reparador.png');
     }
 }

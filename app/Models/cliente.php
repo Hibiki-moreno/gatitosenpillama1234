@@ -10,7 +10,7 @@ class Cliente extends Model
     public $timestamps = false;
     protected $table = 'cliente';
     
-
+    // 👇 AGREGAMOS 'imagen' A fillable
     protected $fillable = [
         'nombres',
         'apellido_paterno',
@@ -18,10 +18,18 @@ class Cliente extends Model
         'celular',
         'correo',
         'direccion',
-        'estado'
+        'estado',
+        'imagen'  // ✅ CAMPO NUEVO PARA LA IMAGEN
     ];
+    
     public function tickets()
     {
         return $this->hasMany(Ticket::class);
+    }
+    
+    // 👇 ACCESOR para obtener URL completa de la imagen
+    public function getImagenUrlAttribute()
+    {
+        return $this->imagen ? asset('storage/' . $this->imagen) : asset('img/default-user.png');
     }
 }

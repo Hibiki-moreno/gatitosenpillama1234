@@ -9,10 +9,8 @@ class Equipo extends Model
 {
     use HasFactory;
 
-    public $timestamps = false;
     protected $table = 'equipos';
- 
-
+    
     protected $fillable = [
         'modelo',
         'marca',
@@ -20,8 +18,16 @@ class Equipo extends Model
         'condicion_fisica',
         'color'
     ];
-    public function tickets()
+
+    // Relación: Un equipo tiene 3 imágenes
+    public function imagenes()
     {
-        return $this->hasMany(Ticket::class);
+        return $this->hasMany(EquipoImagen::class)->orderBy('orden');
+    }
+
+    // Obtener primera imagen (principal)
+    public function getImagenPrincipalAttribute()
+    {
+        return $this->imagenes->first()->imagen_url ?? null;
     }
 }
