@@ -9,11 +9,32 @@ use App\Http\Controllers\ReparadorController;
 use App\Http\Controllers\TicketController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiController;
+use App\Http\Controllers\GoogleAuthController;
+use App\Http\Controllers\DashboardController;
+use Illuminate\Support\Facades\Auth;
 
 // Ruta principal
+//Route::get('/', function () {
+  //  return view('layouts.app');
+//});
+
 Route::get('/', function () {
-    return view('layouts.app');
-});
+    return view('layouts.app'); 
+})->name('inicio');
+
+// Rutas de Google
+Route::get('/login', function () {
+    return view('login');
+})->name('login');
+
+Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->name('google.login');
+Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback']);
+
+// Ruta de logout
+Route::post('/logout', function () {
+    Auth::logout();
+    return redirect('/');
+})->name('logout');
 
 // CLIENTES
 Route::controller(ClienteController::class)->group(function () {
@@ -27,7 +48,6 @@ Route::controller(ClienteController::class)->group(function () {
 });
 
 // EQUIPOS
-// EQUIPOS - CON 3 IMÁGENES
 Route::get('/equipos', [EquipoController::class, 'index'])->name('equipos.index');
 Route::get('/equipos/crear', [EquipoController::class, 'create'])->name('equipos.create');
 Route::post('/equipos', [EquipoController::class, 'store'])->name('equipos.store');
@@ -36,7 +56,7 @@ Route::get('/equipos/{equipo}/editar', [EquipoController::class, 'edit'])->name(
 Route::put('/equipos/{equipo}', [EquipoController::class, 'update'])->name('equipos.update');
 Route::delete('/equipos/{equipo}', [EquipoController::class, 'destroy'])->name('equipos.destroy');
 
-// TICKETS NO ESTA LISTA
+// TICKETS NO ESTA LISTA copiar lo de hibi
 Route::get('/tickets', [TicketController::class, 'index']);
 Route::get('/tickets/crear', [TicketController::class, 'create']);
 Route::post('/tickets', [TicketController::class, 'store']);
@@ -51,7 +71,6 @@ Route::get('/reparadores/{reparador}/editar', [ReparadorController::class, 'edit
 Route::put('/reparadores/{reparador}', [ReparadorController::class, 'update'])->name('reparadores.update');
 Route::delete('/reparadores/{reparador}', [ReparadorController::class, 'destroy'])->name('reparadores.destroy');
 
-// MATERIALES
 // MATERIALES
 Route::get('/materiales', [MaterialesController::class, 'index'])->name('materiales.index');
 Route::get('/materiales/crear', [MaterialesController::class, 'create'])->name('materiales.create');
