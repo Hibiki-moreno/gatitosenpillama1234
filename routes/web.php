@@ -12,6 +12,8 @@ use App\Http\Controllers\ApiController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Http\Request;
 
 // Ruta principal
 //Route::get('/', function () {
@@ -104,3 +106,41 @@ Route::get('/tickets', [EvidenciaController::class, 'index'])->name('tickets.ind
 //Route::get('/dashboard', function () {
    // return view('dashboard');
 //}); -->
+
+Route::middleware(['auth'])->group(function () {
+    
+    // Ruta para ver la página del mapa
+    Route::get('/geolocalizacion', function () {
+        return view('map.mapa'); // Asegúrate de que el archivo esté en resources/views/geo/index.blade.php
+    })->name('geo.index');
+    // Guardar una ubicación nueva (POST)
+Route::post('/api/guardar-ubicacion', function (Request $request) {
+    // Aquí iría tu lógica para guardar en la BD, por ejemplo:
+    // Ubicacion::create($request->all());
+    return response()->json(['message' => 'Ubicación guardada con éxito']);
+})->name('geo.store');
+
+// Actualizar una ubicación (PUT)
+Route::put('/api/actualizar-ubicacion/{id}', function (Request $request, $id) {
+    return response()->json(['message' => 'Ubicación ' . $id . ' actualizada']);
+})->name('geo.update');
+
+// Eliminar una ubicación (DELETE)
+Route::delete('/api/eliminar-ubicacion/{id}', function ($id) {
+    return response()->json(['message' => 'Ubicación ' . $id . ' eliminada']);
+})->name('geo.destroy');
+
+    // Ruta API interna para buscar en LocationIQ sin exponer tu Token en el JS
+    Route::get('/api/buscar-direccion', function (Request $request) {
+        $query = $request->query('q');
+        $token = config('services.locationiq.key');
+
+        $response = Http::get("https://us1.locationiq.com/v1/search.php", [
+            'key' => $token,
+            'q' => $query,
+            'format' => 'json',
+        ]);
+
+        return $response->json();
+    })->name('geo.search');
+});
